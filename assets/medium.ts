@@ -4,17 +4,17 @@ export default ({ title, description, date, url, thumbnail, theme }) => {
     themeSelected === "light"
       ? `p {
     line-height: 1.5;
-    color: #ffffff
+    color: #a9fef7
   }
   h3{
-    color: #ffffff
+    color: #a9fef7
   }`
       : `p {
     line-height: 1.5;
-    color: #ffffff
+    color: #a9fef7
   }
   h3{
-    color: #ffffff
+    color:#a9fef7
   }`;
   return `
 <svg fill="none" width="800" height="120" xmlns="http://www.w3.org/2000/svg">
@@ -66,7 +66,7 @@ export default ({ title, description, date, url, thumbnail, theme }) => {
         }
         ${textStyle}
         small{
-          color: #888;
+          color: #f8d847;
           display: block;
           margin-top: 5px;
           margin-bottom: 8px
