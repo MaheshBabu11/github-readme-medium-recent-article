@@ -47,7 +47,7 @@ export default ({ title, description, date, url, thumbnail, theme }) => {
           border: 1px solid rgba(0,0,0,.2);
           padding: 10px 20px;
           border-radius: 10px;
-          background: #1c1855;
+          background: #141321;
           backdrop-filter: blur(10px);
           overflow: hidden;
           text-overflow: ellipsis;
