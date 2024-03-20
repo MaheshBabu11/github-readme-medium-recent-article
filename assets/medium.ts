@@ -1,4 +1,5 @@
-export default ({ title, description, date, url, thumbnail ,themeSelected }) => {
+export default ({ title, description, date, url, thumbnail ,theme }) => {
+  const themeSelected = theme || 'dark';
   const textStyle = themeSelected === 'light' ?`p {
     line-height: 1.5;
     color: #555
