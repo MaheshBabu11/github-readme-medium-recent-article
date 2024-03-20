@@ -4,14 +4,14 @@ export default ({ title, description, date, url, thumbnail, theme }) => {
     themeSelected === "light"
       ? `p {
     line-height: 1.5;
-    color: #a9fef7
+    color: #fe428e
   }
   h3{
     color: #a9fef7
   }`
       : `p {
     line-height: 1.5;
-    color: #a9fef7
+    color: #fe428e
   }
   h3{
     color:#a9fef7
