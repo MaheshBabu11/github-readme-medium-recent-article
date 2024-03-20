@@ -1,12 +1,15 @@
-export default ({ title, description, date, url, thumbnail ,theme }) => {
-  const themeSelected = theme || 'dark';
-  const textStyle = themeSelected === 'light' ?`p {
+export default ({ title, description, date, url, thumbnail, theme }) => {
+  const themeSelected = theme || "dark";
+  const textStyle =
+    themeSelected === "light"
+      ? `p {
     line-height: 1.5;
-    color: #555
+    color: #ffffff
   }
   h3{
-    color: #333
-  }`:`p {
+    color: #ffffff
+  }`
+      : `p {
     line-height: 1.5;
     color: #ffffff
   }
@@ -44,7 +47,7 @@ export default ({ title, description, date, url, thumbnail ,theme }) => {
           border: 1px solid rgba(0,0,0,.2);
           padding: 10px 20px;
           border-radius: 10px;
-          background: rgba(255,255,255,0.1);
+          background: #1c1855;
           backdrop-filter: blur(10px);
           overflow: hidden;
           text-overflow: ellipsis;
@@ -85,4 +88,4 @@ export default ({ title, description, date, url, thumbnail ,theme }) => {
 	</foreignObject>
 </svg>
 `;
-      }
+};
