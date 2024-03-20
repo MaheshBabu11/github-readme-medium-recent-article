@@ -1,4 +1,18 @@
-export default ({ title, description, date, url, thumbnail }) => `
+export default ({ title, description, date, url, thumbnail ,themeSelected }) => {
+  const textStyle = themeSelected === 'light' ?`p {
+    line-height: 1.5;
+    color: #555
+  }
+  h3{
+    color: #333
+  }`:`p {
+    line-height: 1.5;
+    color: #ffffff
+  }
+  h3{
+    color: #ffffff
+  }`;
+  return `
 <svg fill="none" width="800" height="120" xmlns="http://www.w3.org/2000/svg">
 	<foreignObject width="100%" height="100%">
 		<div xmlns="http://www.w3.org/1999/xhtml">
@@ -47,13 +61,7 @@ export default ({ title, description, date, url, thumbnail }) => `
           text-decoration: none;
           color: inherit
         }
-        p {
-          line-height: 1.5;
-          color: #555
-        }
-        h3{
-          color: #333
-        }
+        ${textStyle}
         small{
           color: #888;
           display: block;
@@ -76,3 +84,4 @@ export default ({ title, description, date, url, thumbnail }) => `
 	</foreignObject>
 </svg>
 `;
+      }
