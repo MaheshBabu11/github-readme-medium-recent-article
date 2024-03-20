@@ -4,15 +4,16 @@ import medium from '../../../assets/medium';
 
 export default async (req: NowRequest, res: NowResponse) => {
   const {
-    query: { user, index },
+    query: { user, index , theme },
     headers,
   } = req;
 
   const { title, thumbnail, url, date, description } = await getArticle(index,user);
 
+
   const dest = headers['sec-fetch-dest'] || headers['Sec-Fetch-Dest'];
   const accept = headers['accept'];
-  const isImage = dest ? dest === 'image' : !/text\/html/.test(accept);
+  const isImage = dest ? dest === 'image' : !/text\/html/.test(accept ?? '');
 
   if (isImage) {
     res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
@@ -26,6 +27,7 @@ export default async (req: NowRequest, res: NowResponse) => {
         url,
         date,
         description,
+        theme
       })
     );
   }
