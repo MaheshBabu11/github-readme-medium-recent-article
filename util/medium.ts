@@ -1,82 +1,77 @@
 import axios from "axios";
 import moment from "moment";
-const { parse } = require("rss-to-json");
+import { feedToJSON } from "./feedtojson";
+import { JSDOM } from "jsdom";
 
-export const getArticle = async (index, username) => {
-  try {
-    const rssUrl = `https://medium.com/feed/${username}`;
-    const response = await axios.get(rssUrl);
-    const rssContent = response.data;
+export const getArticle = async (index: string, username: string) => {
+  const rssUrl = `https://medium.com/feed/${username}`;
+  const res = await feedToJSON(rssUrl);
+  let fixItem: any[] = [];
 
-    if (!rssContent) {
-      throw new Error("Failed to fetch RSS content");
-    }
-
-    const rssJson = await parse(response.data);
-    if (!rssJson || !rssJson.items) {
-      throw new Error("Failed to parse RSS content");
-    }
-
-    const items = rssJson.items;
-    let fixItem: any[] = [];
-
-    items.forEach((element) => {
-      const { description } = element;
-      const regexPattern = /<img[^>]+src="(.*?)"/;
-      const match = description.match(regexPattern);
-      const imgSrc = match ? match[1] : "";
-
-      if (imgSrc.includes("cdn")) {
-        element.thumbnail = imgSrc;
-        fixItem.push(element);
-      }
-    });
-
-    if (fixItem.length === 0) {
-      throw new Error("No articles found with the specified criteria");
-    }
-
-    const {
-      title,
-      pubDate,
-      link: url,
-      thumbnail,
-      description,
-    } = fixItem[index || 0];
-
-    let convertedThumbnail = "";
+  // @ts-ignore
+  res?.items.forEach((element) => {
+    const thumbnail = extractFirstImageFromHTML(element.content);
     if (thumbnail) {
-      const { data: thumbnailRaw } = await axios.get(thumbnail, {
-        responseType: "arraybuffer",
-      });
-
-      const base64Img = Buffer.from(thumbnailRaw).toString("base64");
-      const imgTypeArr = thumbnail.split(".");
-      const imgType = imgTypeArr[imgTypeArr.length - 1];
-      convertedThumbnail = `data:image/${imgType};base64,${base64Img}`;
+      element.thumbnail = thumbnail;
+      fixItem.push(element);
     }
+  });
 
-    return {
-      title: title.length > 80 ? title.substring(0, 80) + " ..." : title,
-      thumbnail: convertedThumbnail,
-      url,
-      date: moment(pubDate).format("DD MMM YYYY, HH:mm"),
-      description:
-        description
-          .replace(/<h3>.*<\/h3>|<figcaption>.*<\/figcaption>|<[^>]*>/gm, "")
-          .substring(0, 60) + "...",
-    };
-  } catch (error) {
-    console.error("Error occurred:", error.message);
-    if (error.response) {
-      console.error("Response data:", error.response.data);
-      console.error("Response status:", error.response.status);
-      console.error("Response headers:", error.response.headers);
-    } else if (error.request) {
-      console.error("No response received:", error.request);
-    } else {
-      console.error("Request setup error:", error.message);
-    }
-    throw error;
-  }
+  const {
+    title,
+    published: pubDate,
+    link: url,
+    thumbnail,
+    content: description,
+  } = fixItem[
+    // @ts-ignore
+    index || 0
+  ];
+
+  const responseThumbnail = await axios(thumbnail.src, {
+    responseType: "arraybuffer",
+  });
+  const base64Img = Buffer.from(responseThumbnail.data, "binary").toString(
+    "base64"
+  );
+
+  const imgTypeArr = thumbnail.src.split(".");
+  const imgType = imgTypeArr[imgTypeArr.length - 1];
+
+  const convertedThumbnail = `data:image/${imgType};base64,${base64Img}`;
+  return {
+    title: title.length > 80 ? title.substring(0, 80) + " ..." : title,
+    thumbnail: convertedThumbnail,
+    url,
+    date: moment(pubDate).format("DD MMM YYYY, HH:mm"),
+    description:
+      description
+        .replace(/<h3>.*<\/h3>|<figcaption>.*<\/figcaption>|<[^>]*>/gm, "")
+        .substring(0, 60) + "...",
+  };
 };
+
+// Define a type for the image data
+type ImageData = {
+  src: string;
+  alt: string;
+  caption?: string;
+};
+
+function extractFirstImageFromHTML(html: string): ImageData | null {
+  const dom = new JSDOM(html);
+  const document = dom.window.document;
+
+  // Select the first figure that contains an image
+  const figure = document.querySelector("figure img");
+  if (figure) {
+    const img = figure as HTMLImageElement; // Ensure it's treated as an image element
+    // const figcaption = figure.parentElement ? figure.parentElement.querySelector('figcaption') : null;
+    return {
+      src: img.src,
+      alt: img.alt || "", // Use an empty string if alt is not present
+    };
+  }
+
+  return null; // Return null if no images are found
+}
