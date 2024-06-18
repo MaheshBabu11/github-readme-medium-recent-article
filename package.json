@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "axios": "^0.21.2",
-    "moment": "^2.29.4"
+    "cheerio": "^1.0.0-rc.12",
+    "moment": "^2.29.4",
+    "rss-to-json": "^2.1.1"
   }
 }
